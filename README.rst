@@ -7,4 +7,4 @@ Origin
 ------
 
 Pykake was developped to control a monitoring display for `Shinken <http://www.shinken-monitoring.org/>`_
-. A Katana Kake is a japanese term for a sword stand.
+. A Katana Kake is a Japanese term for a sword stand.
