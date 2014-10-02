@@ -7,5 +7,5 @@ sudo apt-get install -y xwit
 sudo apt-get install -y libnss3
 
 cp root/etc/rc.local /etc/rc.local && chmod +x /etc/rc.local
-cp root/boot/xinitrc /home/pi/.xinitrc && chown pi:pi /home/pi/.xinitrc
-cp -r root/boot/.mozilla /boot/
+cp root/home/pi/.xinitrc /home/pi/.xinitrc && chown pi:pi /home/pi/.xinitrc
+cp -r root/home/pi/pikake /home/pi/pikake

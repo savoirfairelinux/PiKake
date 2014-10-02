@@ -11,7 +11,7 @@ while true; do
     rm -rf /home/pi/.mozilla
 
     # Bring in the bare minimum to keep Firefox happy
-    cp -r /boot/.mozilla /home/pi/
+    cp -r /home/pi/pikake/.mozilla /home/pi/
 
     # Disable DPMS / Screen blanking
     xset -dpms
@@ -26,7 +26,7 @@ while true; do
     # Start the window manager (remove "-use_cursor no" if you actually want mouse interaction)
     matchbox-window-manager -use_titlebar no -use_cursor no &
 
-    # Start the browser (See http://peter.sh/experiments/chromium-command-line-switches/)
+    # Start the browser
     firefox
 
 done;
