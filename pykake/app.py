@@ -15,9 +15,9 @@ def index():
 
 @app.route('/', methods=['POST'])
 def post():
-    config['tabs'] = request.form.getlist('option[]')
+    config['tabs'] = filter(None, request.form.getlist('option[]'))
     save_config()
-    return str(request.form)
+    return "New tabs saved"
 
 def save_config():
     # Save the new config to file
