@@ -4,6 +4,7 @@ while true; do
     # Clean up previously running apps, gracefully at first then harshly
     sleep 2
     pkill -SIGKILL -f firefox 2>/dev/null
+    pkill -SIGKILL -f iceweasel 2>/dev/null
     pkill -SIGKILL -f matchbox-window-manager 2>/dev/null
     sleep 2
 
