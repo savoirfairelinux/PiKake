@@ -9,5 +9,5 @@ sudo apt-get install -y python-pip
 
 cp root/etc/rc.local /etc/rc.local && chmod +x /etc/rc.local
 cp root/home/pi/.xinitrc /home/pi/.xinitrc && chown pi:pi /home/pi/.xinitrc
-cp -r pikake /home/pi/pikake
+cp -r pikake /home/pi/pikake && chown -R pi:pi /home/pi/pikake
 pip install -r requirements.txt
