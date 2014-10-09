@@ -46,7 +46,7 @@ def reload_browser():
             'firefox -new-tab ' + tab,
             shell=True, stdin=None, stdout=None, stderr=None
         )
-        time.sleep(2)
+        time.sleep(10)
 
 
 if __name__ == '__main__':
