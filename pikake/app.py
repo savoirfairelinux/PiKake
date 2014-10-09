@@ -32,6 +32,7 @@ def post():
 def reload_browser():
     # Kill the browser
     os.system("pkill -9 -f firefox")
+    os.system("pkill -9 -f iceweasel")
 
     # Reset the browser config
     shutil.rmtree("/home/pi/.mozilla", ignore_errors=True)
