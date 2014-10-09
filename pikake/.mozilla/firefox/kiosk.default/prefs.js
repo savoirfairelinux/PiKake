@@ -72,3 +72,5 @@ user_pref("services.sync.tabs.lastSync", "0");
 user_pref("services.sync.tabs.lastSyncLocal", "0");
 user_pref("toolkit.startup.last_success", 1411666397);
 user_pref("toolkit.telemetry.previousBuildID", "20140608211457");
+user_pref("tabslideshow.start", true);
+user_pref("tabslideshow.time", 10);
