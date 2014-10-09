@@ -7,12 +7,6 @@ while true; do
     pkill -SIGKILL -f matchbox-window-manager 2>/dev/null
     sleep 2
 
-    # Clean out existing profile information
-    rm -rf /home/pi/.mozilla
-
-    # Bring in the bare minimum to keep Firefox happy
-    cp -r /home/pi/pikake/.mozilla /home/pi/
-
     # Disable DPMS / Screen blanking
     xset -dpms
     xset s off
@@ -24,10 +18,9 @@ while true; do
     xwit -root -warp $( cat /sys/module/*fb*/parameters/fbwidth ) $( cat /sys/module/*fb*/parameters/fbheight )
 
     # Start the window manager (remove "-use_cursor no" if you actually want mouse interaction)
-    matchbox-window-manager -use_titlebar no -use_cursor no &
+    matchbox-window-manager  -use_titlebar no -use_cursor no &
 
-    # Start the browser
-    firefox
+    # Start pykake
+    python /home/pi/pikake/app.py
 
 done;
-

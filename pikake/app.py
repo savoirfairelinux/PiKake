@@ -12,8 +12,8 @@ import time
 
 app = Flask(__name__)
 
-pykake_dir = os.path.dirname(os.path.abspath(__file__))
-cfg = config.load_config(pykake_dir)
+pikake_dir = os.path.dirname(os.path.abspath(__file__))
+cfg = config.load_config(pikake_dir)
 
 
 @app.route('/', methods=['GET'])
@@ -24,7 +24,7 @@ def index():
 @app.route('/', methods=['POST'])
 def post():
     cfg['tabs'] = filter(None, request.form.getlist('option[]'))
-    config.save_config(pykake_dir, cfg)
+    config.save_config(pikake_dir, cfg)
     reload_browser()
     return "New tabs saved"
 
@@ -36,7 +36,7 @@ def reload_browser():
     # Reset the browser config
     shutil.rmtree("/home/pi/.mozilla", ignore_errors=True)
     shutil.copytree(
-        os.path.join(pykake_dir, '.mozilla'),
+        os.path.join(pikake_dir, '.mozilla'),
         "/home/pi/.mozilla"
     )
 
