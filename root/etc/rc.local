@@ -11,5 +11,5 @@
 #
 # By default this script does nothing.
 
-su - pi -c 'startx' &
+sleep 10 && su - pi -c 'startx' &
 
