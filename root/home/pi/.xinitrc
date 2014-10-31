@@ -3,10 +3,10 @@ while true; do
 
     # Clean up previously running apps, gracefully at first then harshly
     sleep 2
-    pkill -SIGKILL -f firefox 2>/dev/null
-    pkill -SIGKILL -f iceweasel 2>/dev/null
-    pkill -SIGKILL -f matchbox-window-manager 2>/dev/null
+    pkill -SIGKILL -f "python /home/pi/pikake/app.py"
+    pkill -SIGKILL -f uzbl
     sleep 2
+    rm -rf /tmp/uzbl*
 
     # Disable DPMS / Screen blanking
     xset -dpms
