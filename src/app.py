@@ -6,7 +6,7 @@ import json
 
 from PyQt4.QtCore import QUrl, QTimer
 from PyQt4.QtGui import QApplication, QStackedLayout, QWidget
-from PyQt4.QtWebKit import QWebView
+from PyQt4.QtWebKit import QWebView, QWebSettings
 
 class BrowserTab(QWebView):
 
@@ -24,7 +24,7 @@ class Browser(QWidget):
         self.showFullScreen()
 
         self.changeTabSignal = QTimer()
-        self.changeTabSignal.setInterval(1000)
+        self.changeTabSignal.setInterval(5000)
         self.changeTabSignal.timeout.connect(self.next_tab)
         self.setLayout(self.layout)
 
@@ -32,6 +32,7 @@ class Browser(QWidget):
         i = 0
         for url in urls:
             tab = BrowserTab(url)
+            tab.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
             self.layout.insertWidget(i, tab)
 
     def next_tab(self):
