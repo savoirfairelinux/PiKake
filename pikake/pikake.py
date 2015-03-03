@@ -6,13 +6,13 @@ import json
 
 from PyQt5.Qt import QApplication
 
-from browser import *
+from pikake.browser import *
 
 from multiprocessing import Process
 
 import os
 import time
-import config
+import pikake.config
 
 def launch_browser(url):
 
@@ -25,7 +25,7 @@ def launch_browser(url):
 
     browser_app.exec_()
 
-if __name__ == '__main__':
+def main():
     p1 = Process(target = launch_browser, args = ('http://kaji:kaji@demo.kaji-project.org/grafana',))
     p2 = Process(target = launch_browser, args = ('http://kaji:kaji@demo.kaji-project.org/grafana',))
     p3 = Process(target = launch_browser, args = ('http://kaji:kaji@demo.kaji-project.org/grafana',))
@@ -35,3 +35,8 @@ if __name__ == '__main__':
     p2.start()
     p3.start()
 #     p2.start()
+
+
+
+if __name__ == '__main__':
+    main()
