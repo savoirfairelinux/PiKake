@@ -1,8 +1,19 @@
 
+Installation
+============
 
 
-sudo apt-get install matchbox git python3 pyqt5-dev  python-qt4 python-qt4-dev libqt4-dev python-qt4 python-pip
-sudo pip install flask
+::
 
+    sudo apt-ge install  matchbox
 
-virtualenv -p python3.4 env --system-site-packages
+Get a Dev env
+=============
+
+::
+
+    sudo apt-get install git python3  python3-pyqt5 python3-pyqt5.qtwebkit python3-setuptools python3-pip
+    git clone git@github.com:savoirfairelinux/PiKake.git
+    virtualenv -p python3.4 --system-site-packages env
+    source env/bin/activate
+    python3 setup.py develop
