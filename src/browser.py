@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import QUrl, QTimer
-from PyQt4.QtGui import QStackedLayout, QWidget
-from PyQt4.QtWebKit import QWebView, QWebSettings
+from PyQt5.QtCore import QUrl, QTimer
+from PyQt5.QtWidgets import QStackedLayout, QWidget
+from PyQt5.QtWebKitWidgets import QWebView
+from PyQt5.QtWebKit import QWebSettings
 
 class Browser(QWebView):
 
     def __init__(self, url):
         super(QWebView, self).__init__()
-        self.load(QUrl(url))
-        self.showFullScreen()
         self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
+#         self.settings().setLocalStoragePath('/home/fred/tmp/')
+        new_url = QUrl(url)
+#         new_url.setPassword('kaji')
+#         new_url.setUserName('kaji')
+        self.load(new_url)
+        self.showFullScreen()
 
         self.changeTabSignal = QTimer()
-        self.changeTabSignal.setInterval(5000)
+        self.changeTabSignal.setInterval(15000)
         self.changeTabSignal.timeout.connect(self.next_tab)
 
     def start(self):
