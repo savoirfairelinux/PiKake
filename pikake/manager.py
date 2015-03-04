@@ -11,8 +11,9 @@ from pikake.browser import BrowserProcess, Browser
 
 class Manager(Thread):
 
-    def __init__(self, tasks = Queue()):
-        super(Thread, self).__init__()
+    def __init__(self, tasks=Queue()):
+        # TODO Ask Gstark 
+        Thread.__init__(self)
         self.tasks = tasks
         self.is_running = False
         self.browser_processes = {}
@@ -24,7 +25,7 @@ class Manager(Thread):
 
 
     def accomplish(self, task):
-        if task.type == "load_url":
+        if task.type == 'load_url':
             browser_process = BrowserProcess(task.value['url'], task.value['display_time'], task.value['refresh'])
             browser_process.start()
             pid = browser_process.pid
@@ -45,9 +46,11 @@ class Manager(Thread):
     def display_delay_is_over(self):
         return (self.display_delay + self.reference_time) <= time.time()
 
-    def next_browser(self):
+    def load_next_browser(self):
         self.current_browser_index = (self.current_browser_index + 1) % len(self.browser_id_seq)
-        return self.browser_processes[self.browser_id_seq[self.current_browser_index]]
+        browser_proc = self.browser_processes[self.browser_id_seq[self.current_browser_index]]
+        browser_proc.queue.put('show')
+        self.display_time = browser_proc.display_time
 
     def run(self):
         self.is_running = True
@@ -63,6 +66,4 @@ class Manager(Thread):
 
             if self.display_delay_is_over():
                 self.reset_timer()
-                browser = self.next_browser()
-                browser.queue.put('show')
-                self.display_time = browser.display_time
+                self.load_next_browser()

@@ -4,7 +4,7 @@ import os
 
 def save_config(dir, config):
     # Save the new config to file
-    with open(os.path.join(dir, 'config.json'), 'wb') as f:
+    with open(os.path.join(dir, 'config.json'), 'w') as f:
         json.dump(config, f)
 
 
