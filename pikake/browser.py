@@ -3,7 +3,7 @@
 import sys
 import time
 
-from PyQt5.QtCore import QUrl, QTimer
+from PyQt5.QtCore import QUrl, QTimer, Qt
 from PyQt5.QtWidgets import QStackedLayout, QWidget
 from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtWebKit import QWebSettings
@@ -24,6 +24,8 @@ class Browser(QWebView):
         self.showFullScreen()
         self.refresh = refresh
         self.display_time = display_time
+        self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff)
+        self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff)
 
 class BrowserProcess(Process):
 
