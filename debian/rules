@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+# PBR bug ... PBR_VERSION must be define
+# So we define it with anything
+export PBR_VERSION=useless
+
+%:
+	dh $@ --buildsystem=pybuild --with python3 --install-layout=deb,quilt
+
+
+override_dh_clean:
+	rm -rf ./build
+	rm -rf ./*egg
+	dh_clean
+
