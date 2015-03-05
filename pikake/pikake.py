@@ -15,13 +15,14 @@ from flask import request
 
 from pikake.browser import *
 from pikake.manager import Manager
+from pikake.task import Task
 
-import pikake.config
 
 pikake_dir = os.path.dirname(os.path.abspath(__file__))
 cfg = {}
 
 app = Flask(__name__)
+manager = Manager()
 
 
 @app.route('/', methods=['GET'])
@@ -31,24 +32,13 @@ def index():
 @app.route('/', methods=['POST'])
 def post():
     cfg['tabs'] = [tab for tab in filter(None, request.form.getlist('option[]'))]
-    pikake.config.save_config(pikake_dir, cfg)
+    task = Task()
+    task.type = 'save_config'
+    task.value = cfg['tabs']
+    manager.task_queue.put(task)
     return "New tabs saved"
 
 def main():
-
-    queue = Queue()
-    value1 = { 'url': 'http://kaji:kaji@demo.kaji-project.org/grafana',
-                  'display_time' : 10,
-                  'refresh': False }
-
-    value2 = { 'url': 'http://www.google.ca',
-                  'display_time' : 10,
-                  'refresh': False }
-
-    queue.put(Task('load_url', value1))
-    queue.put(Task('load_url', value2))
-
-    manager = Manager(queue)
 
     def signal_handler(signal, frame):
         logging.debug('You pressed Ctrl+C!')

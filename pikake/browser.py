@@ -18,14 +18,25 @@ class Browser(QWebView):
 
     def __init__(self, url, display_time, refresh = False):
         super(QWebView, self).__init__()
-        self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
-        new_url = QUrl(url)
-        self.load(new_url)
-        self.showFullScreen()
+
+        self.url = url
         self.refresh = refresh
         self.display_time = display_time
+
+        self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
+        self.load(QUrl(url))
+        self.showFullScreen()
+
         self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff)
         self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff)
+
+    def get_attrs(self):
+        values = {}
+        values['url'] = self.url
+        values['display_time'] = self.display_time
+        values['refresh'] = self.refresh
+
+        return values
 
 class BrowserProcess(Process):
 
@@ -36,6 +47,7 @@ class BrowserProcess(Process):
         self.refresh = refresh
         self.browser = None
         self.queue = Queue()
+        self.response_queue = Queue()
 
     def command_thread(self, browser):
         while True:
@@ -46,6 +58,9 @@ class BrowserProcess(Process):
                 if command == 'show':
                     browser.setFocus()
                     browser.activateWindow()
+                elif command == 'get_attrs':
+                    attrs = browser.get_attrs()
+                    self.response_queue.put(attrs)
 
     def run(self):
         self.browser_app = QApplication(sys.argv)
