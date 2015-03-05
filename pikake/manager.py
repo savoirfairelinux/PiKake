@@ -35,7 +35,7 @@ class Manager(Thread):
             pid = browser_process.pid
             self.browser_processes[pid] = browser_process
 
-            # Replace process at index
+            # Replace process at given index
             if "index" in task.value.keys():
                 i = task.value['index']
                 del self.browser_id_seq[i]
@@ -62,11 +62,14 @@ class Manager(Thread):
 
             i = 0
             new_tabs = cfg['tabs']
+
             max_index = max(len(new_tabs), len(self.browser_id_seq))
 
             for i in range(max_index):
                 task = Task()
 
+                # New config has more tabs than current config
+                # Load all remaining tabs from new config
                 if i >= len(self.browser_id_seq):
                     task.type = 'load_url'
                     task.value = new_tabs[i]
@@ -76,6 +79,8 @@ class Manager(Thread):
                 pid = self.browser_id_seq[i]
                 proc = self.browser_processes.get(pid)
 
+                # Current config has more tabs than the new config
+                # Kill all remaining browser processes
                 if i >= len(new_tabs):
                     proc.terminate()
                     continue
@@ -83,9 +88,12 @@ class Manager(Thread):
                 proc.queue.put('get_attrs')
                 attrs = None
 
+                # Get current tab attributes to compare with new config attributes
                 while attrs is None:
                     attrs = proc.response_queue.get()
 
+                # New config tab differs from current tab
+                # Kill current process and replace it by the new one at same index
                 if attrs != new_tabs[i]:
                     proc.terminate()
 
