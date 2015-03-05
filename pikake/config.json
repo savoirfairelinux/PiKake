@@ -1,1 +1,19 @@
-{"tabs": ["http://osvaldas.info/", "http://pixelslave.com/", "http://www.nike.com/us/en_us/c/better-world/", "http://kaji:kaji@demo.kaji-project.org/grafana"]}
+{
+    "tabs": [
+        {
+            "url": "http://www.lapresse.ca",
+            "display_time": 10,
+            "refresh": "FALSE"
+        },
+        {
+            "url": "http://www.radio-canada.ca",
+            "display_time": 10,
+            "refresh": "FALSE"
+        },
+        {
+            "url": "http://www.radio-canada.ca",
+            "display_time": 10,
+            "refresh": "FALSE"
+        }
+    ]
+}
