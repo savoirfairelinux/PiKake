@@ -7,6 +7,7 @@ import json
 import time
 import signal
 import logging
+import argparse
 
 from multiprocessing import Process, Queue
 from flask import Flask
@@ -22,8 +23,6 @@ pikake_dir = os.path.dirname(os.path.abspath(__file__))
 cfg = {}
 
 app = Flask(__name__)
-manager = Manager()
-
 
 @app.route('/', methods=['GET'])
 def index():
@@ -41,6 +40,14 @@ def post():
 
 
 def main():
+    # Handle args
+    parser = argparse.ArgumentParser(description='Pikake')
+    parser.add_argument('--config', '-c', dest='configfile',
+                        default=os.path.join(os.path.dirname(__file__), 'config.json'),
+                         help='config file')
+    args = parser.parse_args()
+    # Set config file
+    app.config['configfile'] = args.configfile
 
     def signal_handler(signal, frame):
         logging.debug('You pressed Ctrl+C!')
@@ -48,6 +55,7 @@ def main():
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
+    manager = Manager(app)
     manager.start()
     app.run()
 

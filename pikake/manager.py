@@ -14,9 +14,10 @@ from pikake.task import Task
 
 class Manager(Thread):
 
-    def __init__(self, tasks=Queue()):
+    def __init__(self, app, tasks=Queue()):
         # TODO Ask Gstark
         Thread.__init__(self)
+        self.app = app
         self.task_queue = tasks
         self.is_running = False
         self.browser_processes = {}
@@ -55,11 +56,11 @@ class Manager(Thread):
             pass
 
     def save_config(self, config):
-        with open(os.path.join(os.curdir, 'config.json'), 'w') as f:
+        with open(self.app.config['configfile'], 'w') as f:
             json.dump(config, f)
 
     def load_config(self):
-        with open(os.path.join(os.curdir, 'config.json'), 'r') as f:
+        with open(self.app.config['configfile'], 'r') as f:
             cfg = json.load(f)
 
             i = 0
