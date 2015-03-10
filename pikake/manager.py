@@ -115,12 +115,14 @@ class Manager(Thread):
         return (self.display_time + self.reference_time) <= time.time()
 
     def load_next_browser(self):
+        self.browser_processes[self.browser_id_seq[self.current_browser_index]].queue.put('stop_scrolling')
         self.current_browser_index = self.next_browser_index()
         browser_proc = self.browser_processes[self.browser_id_seq[self.current_browser_index]]
         browser_proc.queue.put('show')
         self.display_time = browser_proc.display_time
 
-        self.refresh_browser(self.next_browser_index())
+        browser_proc.queue.put('continue_scrolling')
+        #self.refresh_browser(self.next_browser_index())
 
     def refresh_browser(self, index):
         browser_proc = self.browser_processes[self.browser_id_seq[index]]

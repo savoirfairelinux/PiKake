@@ -14,6 +14,29 @@ from threading import Thread
 
 from pikake.task import Task
 
+must_wait = False
+must_run = True
+
+
+def continue_scrolling():
+    must_wait = False
+
+
+def stop_scrolling(se):
+    must_wait = True
+
+
+def scrolling_thread(browser):
+    must_run = True
+    must_wait = False
+    while must_run:
+        while not must_wait and must_run:
+            time.sleep(0.03)
+            if browser.page() != None:
+                if browser.page().mainFrame() != None:
+                    if browser.ready:
+                        browser.page().mainFrame().scroll(0,1)
+
 
 class Browser(QWebView):
 
@@ -25,18 +48,34 @@ class Browser(QWebView):
         self.url = url
         self.refresh = refresh
         self.display_time = display_time
+        self.ready = False
 
         self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
         self.load(QUrl(url))
-        self.showFullScreen()
+        #self.showFullScreen()
 
         self.refresh_signal.connect(self.reload_page)
+        self.loadStarted.connect(self.not_read)
+        self.loadFinished.connect(self.read)
 
         self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff)
         self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff)
 
+    def read(self):
+        print("READY")
+        self.ready = True
+        scroll_thread = Thread(target=scrolling_thread, args=(self,))
+
+        scroll_thread.start()
+
+    def not_read(self):
+        print("NOT READY")
+        self.ready = False
+
     def reload_page(self):
-        self.load(QUrl(self.url))
+        print("RELOAD")
+        self.reload()
+        #self.load(QUrl(self.url))
 
     def get_attrs(self):
         values = {}
@@ -68,15 +107,18 @@ class BrowserProcess(Process):
                 if command == 'show':
                     browser.setFocus()
                     browser.activateWindow()
-
-                    browser.page().mainFrame().scroll(100,100)
-
                 elif command == 'get_attrs':
                     attrs = browser.get_attrs()
                     self.response_queue.put(attrs)
                 elif command == 'reload':
                     if browser.refresh:
                         browser.refresh_signal.emit()
+                elif command == 'continue_scrolling':
+                    #browser.continue_scrolling()
+                    pass
+                elif command == 'stop_scrolling':
+                    #browser.stop_scrolling()
+                    pass
 
     def run(self):
         self.browser_app = QApplication(sys.argv)
@@ -86,4 +128,7 @@ class BrowserProcess(Process):
         t = Thread(target=self.command_thread, args=(self.browser,))
         t.start()
 
+
+
         self.browser_app.exec_()
+

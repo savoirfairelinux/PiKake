@@ -1,18 +1,8 @@
 {
     "tabs": [
         {
-            "url": "http://www.google.ca",
+            "url": "http://fredvac.com",
             "display_time": 5,
-            "refresh": true
-        },
-        {
-            "url": "http://www.afe.gouv.qc.ca",
-            "display_time": 10,
-            "refresh": true
-        },
-        {
-            "url": "http://www.radio-canada.ca",
-            "display_time": 10,
             "refresh": true
         }
     ]
