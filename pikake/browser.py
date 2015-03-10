@@ -30,10 +30,13 @@ class Browser(QWebView):
         self.load(QUrl(url))
         self.showFullScreen()
 
-        self.refresh_signal.connect(self.reload)
+        self.refresh_signal.connect(self.reload_page)
 
         self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff)
         self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff)
+
+    def reload_page(self):
+        self.load(QUrl(self.url))
 
     def get_attrs(self):
         values = {}
@@ -65,6 +68,9 @@ class BrowserProcess(Process):
                 if command == 'show':
                     browser.setFocus()
                     browser.activateWindow()
+
+                    browser.page().mainFrame().scroll(100,100)
+
                 elif command == 'get_attrs':
                     attrs = browser.get_attrs()
                     self.response_queue.put(attrs)

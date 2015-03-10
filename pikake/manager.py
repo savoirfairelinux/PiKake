@@ -88,11 +88,7 @@ class Manager(Thread):
                     continue
 
                 proc.queue.put('get_attrs')
-                attrs = None
-
-                # Get current tab attributes to compare with new config attributes
-                while attrs is None:
-                    attrs = proc.response_queue.get()
+                attrs = proc.response_queue.get(True)
 
                 # New config tab differs from current tab
                 # Kill current process and replace it by the new one at same index
