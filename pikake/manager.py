@@ -11,17 +11,18 @@ from multiprocessing import Process, Queue
 from pikake.browser import BrowserProcess, Browser
 from pikake.task import Task
 
+
 class Manager(Thread):
 
     def __init__(self, tasks=Queue()):
-        # TODO Ask Gstark 
+        # TODO Ask Gstark
         Thread.__init__(self)
         self.task_queue = tasks
         self.is_running = False
         self.browser_processes = {}
         self.browser_id_seq = []
 
-        self.display_delay = 0
+        self.display_time = 0
         self.reset_timer()
         self.current_browser_index = 0
 
@@ -43,7 +44,8 @@ class Manager(Thread):
             else:
                 self.browser_id_seq.append(pid)
 
-            self.display_delay = task.value['display_time']
+            if self.display_time == 0:
+                self.display_time = task.value['display_time']
 
         elif task.type == 'save_config':
             #self.save_config(task.value)
@@ -113,14 +115,23 @@ class Manager(Thread):
     def reset_timer(self):
         self.reference_time = time.time()
 
-    def display_delay_is_over(self):
-        return (self.display_delay + self.reference_time) <= time.time()
+    def display_time_is_over(self):
+        return (self.display_time + self.reference_time) <= time.time()
 
     def load_next_browser(self):
-        self.current_browser_index = (self.current_browser_index + 1) % len(self.browser_id_seq)
+        self.current_browser_index = self.next_browser_index()
         browser_proc = self.browser_processes[self.browser_id_seq[self.current_browser_index]]
         browser_proc.queue.put('show')
         self.display_time = browser_proc.display_time
+
+        self.refresh_browser(self.next_browser_index())
+
+    def refresh_browser(self, index):
+        browser_proc = self.browser_processes[self.browser_id_seq[index]]
+        browser_proc.queue.put('reload')
+
+    def next_browser_index(self):
+        return (self.current_browser_index + 1) % len(self.browser_id_seq)
 
     def run(self):
         self.is_running = True
@@ -134,6 +145,6 @@ class Manager(Thread):
                 task = self.task_queue.get()
                 self.accomplish(task)
 
-            if self.display_delay_is_over():
+            if self.display_time_is_over():
                 self.reset_timer()
                 self.load_next_browser()

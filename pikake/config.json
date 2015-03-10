@@ -1,19 +1,19 @@
 {
     "tabs": [
         {
-            "url": "http://www.lapresse.ca",
-            "display_time": 10,
-            "refresh": "FALSE"
+            "url": "http://www.google.ca",
+            "display_time": 5,
+            "refresh": false
         },
         {
             "url": "http://www.radio-canada.ca",
             "display_time": 10,
-            "refresh": "FALSE"
+            "refresh": false
         },
         {
-            "url": "http://www.radio-canada.ca",
+            "url": "http://fredvac.com",
             "display_time": 10,
-            "refresh": "FALSE"
+            "refresh": true
         }
     ]
 }

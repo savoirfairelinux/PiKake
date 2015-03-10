@@ -29,6 +29,7 @@ manager = Manager()
 def index():
     return render_template('index.html', config=cfg)
 
+
 @app.route('/', methods=['POST'])
 def post():
     cfg['tabs'] = [tab for tab in filter(None, request.form.getlist('option[]'))]
@@ -37,6 +38,7 @@ def post():
     task.value = cfg['tabs']
     manager.task_queue.put(task)
     return "New tabs saved"
+
 
 def main():
 
