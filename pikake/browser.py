@@ -21,20 +21,23 @@ class Browser(QWebView):
     refresh_signal = pyqtSignal()
     scroll_signal = pyqtSignal(bool)
 
-    def __init__(self, url, display_time, refresh=False):
+    def __init__(self, url, display_time, refresh=False, autoscroll=True):
         super(QWebView, self).__init__()
 
         self.url = url
         self.refresh = refresh
         self.display_time = display_time
+        self.autoscroll = autoscroll
 
         self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
         self.load(QUrl(url))
-#        self.showFullScreen()
-        
+        self.showFullScreen()
 
         self.refresh_signal.connect(self.reload_page)
         self.scroll_signal.connect(self.scroll)
+
+        self.must_run = True
+        self.must_wait = False if self.autoscroll else True
 
         self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOn)
         self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOn)
@@ -47,6 +50,7 @@ class Browser(QWebView):
         values['url'] = self.url
         values['display_time'] = self.display_time
         values['refresh'] = self.refresh
+        values['autoscroll'] = self.autoscroll
         return values
 
     def scroll(self, down):
@@ -55,64 +59,79 @@ class Browser(QWebView):
         else:
             self.page().mainFrame().scroll(0, -1)
 
+    def resume_scrolling(self):
+        self.must_wait = False
+
+    def pause_scrolling(self):
+        self.must_wait = True
 
 class BrowserProcess(Process):
 
-    def __init__(self, url, display_time, refresh=False):
+    def __init__(self, url, display_time, refresh=False, autoscroll=True):
         super(Process, self).__init__()
         self.url = url
         self.display_time = display_time
         self.refresh = refresh
+        self.autoscroll = autoscroll
         self.browser = None
         self.queue = Queue()
         self.response_queue = Queue()
 
-    def command_thread(self, browser):
-        print(browser.refresh_signal)
+    def command_thread(self):
         while True:
             time.sleep(0.1)
             if not self.queue.empty():
                 command = self.queue.get()
 
                 if command == 'show':
-                    browser.setFocus()
-                    browser.activateWindow()
-
-                    browser.page().mainFrame().scroll(100,100)
+                    self.browser.setFocus()
+                    self.browser.activateWindow()
+                    self.browser.page().mainFrame().setScrollBarValue(Qt.Vertical, 0)
 
                 elif command == 'get_attrs':
-                    attrs = browser.get_attrs()
+                    attrs = self.browser.get_attrs()
                     self.response_queue.put(attrs)
+
                 elif command == 'reload':
-                    if browser.refresh:
-                        browser.refresh_signal.emit()
+                    if self.browser.refresh:
+                        self.browser.refresh_signal.emit()
 
-    def run(self):
-        self.browser_app = QApplication(sys.argv)
-        self.browser = Browser(self.url, self.display_time, self.refresh)
-        self.browser.show()
+                elif command == 'pause_scrolling':
+                    self.browser.pause_scrolling()
 
-        t = Thread(target=self.command_thread, args=(self.browser,))
-        t.start()
+                elif command == 'resume_scrolling':
+                    if self.browser.autoscroll:
+                        self.browser.resume_scrolling()
 
-        self.scroll_thread = Thread(target=self.scrolling_thread, args=(self.browser,))
-        self.scroll_thread.start()
-
-        self.browser_app.exec_()
-
-    def scrolling_thread(self, browser):
-        self.must_run = True
-        self.must_wait = False
+    def scrolling_thread(self):
         down = True
-        mainFrame = browser.page().mainFrame()
-        while self.must_run:
-            while not self.must_wait and self.must_run:
+
+        mainFrame = self.browser.page().mainFrame()
+
+        while self.browser.must_run:
+            while not self.browser.must_wait and self.browser.must_run:
                 time.sleep(0.03)
+
+                pos = mainFrame.scrollBarValue(Qt.Vertical)
                 min_ = mainFrame.scrollBarMinimum(Qt.Vertical)
                 max_ = mainFrame.scrollBarMaximum(Qt.Vertical)
-                pos = mainFrame.scrollBarValue(Qt.Vertical)
+
                 if pos == max_:
                     down = False
                 elif pos == min_:
                     down = True
-                browser.scroll_signal.emit(down)
+
+                self.browser.scroll_signal.emit(down)
+
+    def run(self):
+        self.browser_app = QApplication(sys.argv)
+        self.browser = Browser(self.url, self.display_time, self.refresh, self.autoscroll)
+        self.browser.show()
+
+        t = Thread(target=self.command_thread)
+        t.start()
+
+        self.scroll_thread = Thread(target=self.scrolling_thread)
+        self.scroll_thread.start()
+
+        self.browser_app.exec_()

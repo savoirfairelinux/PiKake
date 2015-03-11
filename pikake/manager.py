@@ -32,7 +32,8 @@ class Manager(Thread):
 
     def accomplish(self, task):
         if task.type == 'load_url':
-            browser_process = BrowserProcess(task.value['url'], task.value['display_time'], task.value['refresh'])
+            browser_process = BrowserProcess(task.value['url'], task.value['display_time'],
+                                             task.value['refresh'], task.value['autoscroll'])
             browser_process.start()
             pid = browser_process.pid
             self.browser_processes[pid] = browser_process
@@ -116,10 +117,14 @@ class Manager(Thread):
         return (self.display_time + self.reference_time) <= time.time()
 
     def load_next_browser(self):
+        self.current_browser_proc().queue.put('pause_scrolling')
+
         self.current_browser_index = self.next_browser_index()
-        browser_proc = self.browser_processes[self.browser_id_seq[self.current_browser_index]]
-        browser_proc.queue.put('show')
-        self.display_time = browser_proc.display_time
+        next = self.current_browser_proc()
+        next.queue.put('show')
+        next.queue.put('resume_scrolling')
+
+        self.display_time = next.display_time
 
         self.refresh_browser(self.next_browser_index())
 
@@ -129,6 +134,9 @@ class Manager(Thread):
 
     def next_browser_index(self):
         return (self.current_browser_index + 1) % len(self.browser_id_seq)
+
+    def current_browser_proc(self):
+        return self.browser_processes[self.browser_id_seq[self.current_browser_index]]
 
     def run(self):
         self.is_running = True

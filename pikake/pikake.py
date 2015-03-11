@@ -52,7 +52,7 @@ def post():
             continue
         tab['display_time'] = int(request.form.get("display_time__" + tab_id, 0))
         tab['refresh'] = True if request.form.get("refresh__" + tab_id, False) else False
-        tab['vertical'] = True if request.form.get("vertical__" + tab_id, False) else False
+        tab['autoscroll'] = True if request.form.get("vertical__" + tab_id, False) else False
         cfg['tabs'].append(tab)
     task = Task()
     task.type = 'save_config'
