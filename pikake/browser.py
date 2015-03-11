@@ -32,8 +32,8 @@ class Browser(QWebView):
 
         self.refresh_signal.connect(self.reload_page)
 
-        self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff)
-        self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff)
+        self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOn)
+        self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOn)
 
     def reload_page(self):
         self.load(QUrl(self.url))
@@ -86,4 +86,21 @@ class BrowserProcess(Process):
         t = Thread(target=self.command_thread, args=(self.browser,))
         t.start()
 
+        self.scroll_thread = Thread(target=self.scrolling_thread, args=(self.browser,))
+        self.scroll_thread.start()
+
         self.browser_app.exec_()
+
+    def scrolling_thread(self, browser):
+        self.must_run = True
+        self.must_wait = False
+        mainFrame = browser.page().mainFrame()
+        i = 0
+        while self.must_run:
+            while not self.must_wait and self.must_run:
+                time.sleep(0.03)
+                i = i + 1
+                print(mainFrame.scrollBarMinimum(Qt.Vertical))
+                print(mainFrame.scrollBarMaximum(Qt.Vertical))
+                mainFrame.setScrollBarValue(Qt.Vertical, i)
+#                 mainFrame.scroll(0,1)
