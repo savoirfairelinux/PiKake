@@ -27,8 +27,6 @@ from jinja2 import Environment, PackageLoader
 app = Flask(__name__)
 
 
-
-
 @app.route('/', methods=['GET'])
 def index():
     with open(app.config['configfile'], 'r') as f:
@@ -66,7 +64,7 @@ def main():
     parser = argparse.ArgumentParser(description='Pikake')
     parser.add_argument('--config', '-c', dest='configfile',
                         default=os.path.join(os.path.dirname(__file__), 'config.json'),
-                         help='config file')
+                        help='config file')
     args = parser.parse_args()
     # Set config file
     app.config['configfile'] = args.configfile

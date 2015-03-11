@@ -14,6 +14,7 @@ from multiprocessing import Process, Queue
 from threading import Thread
 
 from pikake.task import Task
+import pikake.pikake
 
 
 class Browser(QWebView):
@@ -30,17 +31,23 @@ class Browser(QWebView):
         self.autoscroll = autoscroll
 
         self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
+
+        # CSS needed to hide scrollbar
+        style_url = 'file://' + pikake.pikake.pikake_dir + '/assets/css/style.css'
+        self.settings().setUserStyleSheetUrl(QUrl(style_url))
+
         self.load(QUrl(url))
         self.showFullScreen()
 
         self.refresh_signal.connect(self.reload_page)
         self.scroll_signal.connect(self.scroll)
 
+        self.mainFrame = self.page().mainFrame()
+        self.mainFrame.setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAsNeeded)
+        self.mainFrame.setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAsNeeded)
+
         self.must_run = True
         self.must_wait = False if self.autoscroll else True
-
-        self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOn)
-        self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOn)
 
     def reload_page(self):
         self.load(QUrl(self.url))
@@ -55,15 +62,16 @@ class Browser(QWebView):
 
     def scroll(self, down):
         if down:
-            self.page().mainFrame().scroll(0,1)
+            self.mainFrame.scroll(0, 1)
         else:
-            self.page().mainFrame().scroll(0, -1)
+            self.mainFrame.scroll(0, -1)
 
     def resume_scrolling(self):
         self.must_wait = False
 
     def pause_scrolling(self):
         self.must_wait = True
+
 
 class BrowserProcess(Process):
 
@@ -86,7 +94,7 @@ class BrowserProcess(Process):
                 if command == 'show':
                     self.browser.setFocus()
                     self.browser.activateWindow()
-                    self.browser.page().mainFrame().setScrollBarValue(Qt.Vertical, 0)
+                    self.browser.mainFrame.setScrollBarValue(Qt.Vertical, 0)
 
                 elif command == 'get_attrs':
                     attrs = self.browser.get_attrs()
@@ -106,7 +114,7 @@ class BrowserProcess(Process):
     def scrolling_thread(self):
         down = True
 
-        mainFrame = self.browser.page().mainFrame()
+        mainFrame = self.browser.mainFrame
 
         while self.browser.must_run:
             while not self.browser.must_wait and self.browser.must_run:
