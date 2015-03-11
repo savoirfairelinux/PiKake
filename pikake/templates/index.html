@@ -1,9 +1,12 @@
 <html>
 <head>
     <link rel="stylesheet" href="static/bootstrap.min.css">
-    
+     <!-- Jquery -->
+    <script src="static/jquery-2.1.0.min.js"></script>
+
     <!-- Bootstrap -->
-    <script src="static/bootstrap.min.js"></script>
+   <!-- <script src="static/bootstrap.min.js"></script> -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap/3.3.2/css/bootstrap.min.css">
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
@@ -11,14 +14,14 @@
     <!-- FontAwesome -->
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
-    <!-- Jquery -->
-    <script src="static/jquery-2.1.0.min.js"></script>
-    
+    <script src="/static/formValidation.min.js"></script>
+    <script src="/static/bootstrap.fw.min.js"></script>
+
     <!-- Boostrap validator -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.bootstrapvalidator/0.5.2/css/bootstrapValidator.min.css"/>
     <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.bootstrapvalidator/0.5.2/js/bootstrapValidator.min.js"></script>
     
-    <script src="static/tabform.js"></script>
+<!--    <script src="static/tabform.js"></script> -->
 </head>
 
 
@@ -26,59 +29,156 @@
 
 <center><h1> PiKake Dashboard </h1></center>
 
-<form id="surveyForm" method="post" class="form-horizontal">
+<div class="container">
+    <hr/>
+<form id="PikakeForm" method="post" class="form-horizontal"
+    data-fv-framework="bootstrap"
+    data-fv-icon-valid="glyphicon glyphicon-ok"
+    data-fv-icon-invalid="glyphicon glyphicon-remove"
+    data-fv-icon-validating="glyphicon glyphicon-refresh">
 
-<!--    <div class="form-group">
-        <label class="col-md-3 control-label">Tabs</label>
-        <div class="col-md-5">
-            <input type="text" class="form-control" name="option[]" />
-        </div>
-        <div class="col-md-4">
-            <button type="button" class="btn btn-default addButton">
-                <i class="fa fa-plus"></i>
-            </button>
-        </div>
-    </div>
--->
-
-    <!-- The option field template containing an option field and a Remove button -->
-    <div class="form-group hide" id="optionTemplate">
-        <div class="col-md-offset-3 col-md-5">
-            <input type="text" class="form-control" name="option[]" />
-        </div>
-        <div class="col-md-4">
-            <button type="button" class="btn btn-default removeButton">
-                <i class="fa fa-minus"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Already existing tabs -->
-    {% for tab in config['tabs'] %}
-    <div class="form-group ">
-        <div class="col-md-offset-3 col-md-5">
-            <input type="text" class="form-control" name="option[]" value="{{tab}}"/>
-        </div>
-        <div class="col-md-4">
-            <button type="button" class="btn btn-default removeButton">
-                <i class="fa fa-minus"></i>
-            </button>
-        </div>
-    </div>
-    {% endfor %}
-
-    <div class="col-md-4 col-md-offset-8">
-        <button type="button" class="btn btn-default addButton">
-            <i class="fa fa-plus"></i>
-        </button>
-    </div>
-
+    <div id="tab__" class="hide tab" tabid="0">
     <div class="form-group">
-        <div class="col-md-5 col-md-offset-3">
-           <button type="submit" class="btn btn-default">Save and restart PiKake</button>
+        <label for="url__" class="col-md-2 control-label">Url</label>
+        <div class="col-md-10">
+            <input type="url" class="form-control" name="url__" value=""/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="display_time__" class="col-md-offset-1 col-md-3 control-label">Display time (seconds)</label>
+        <div class="col-md-2">
+            <input min="0" type="number" class="form-control" id="display_time__" name="display_time__" value="{{tab}}" data-fv-integer-message="The value is not an integer"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="refresh__" class="col-md-offset-1 col-md-3 control-label">Auto refresh</label>
+        <div class="col-md-2">
+            <input type="checkbox" id="refresh__" name="refresh__" >
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="vertical__" class="col-md-offset-1 col-md-3 control-label">Vertical scrolling</label>
+        <div class="col-md-2">
+            <input type="checkbox" id="vertical__" name="vertical__" >
+        </div>
+    </div>
+    <hr/>
+    </div>
+    <div class="form-group">
+        <div class="col-md-2 col-md-offset-4">
+           <button type="button" id="reset_button" class="btn btn-default">Reset</button>
+        </div>
+        <div class="col-md-2 col-md-offset-2">
+           <button type="submit" class="btn btn-success">Save and restart PiKake</button>
         </div>
     </div>
 </form>
-
 </body>
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $('#PikakeForm').formValidation();
+});
+
+
+
+function add_tab($data) {
+    // Get last ids
+    var $tabs = $("div.tab");
+    var $max_id = 0;
+    $tabs.each(function($index){
+        var $tab = $(this);
+        var $tabid = parseInt($tab.attr("tabid"));
+        if ($max_id <= $tabid){
+            $max_id = $tabid + 1;
+        }
+    })
+    // Get tab template
+    var $template = $('#tab__')
+    // clone tab template
+    var $clone = $('#tab__').clone()
+                 .removeClass('hide').removeAttr('id')
+                 .addClass('show').prop('id', "tab__" + String($max_id))
+                 .attr('tabid', $max_id)
+                 .insertBefore($template);
+    // Set url input
+    var $url = $clone.find('[name="url__"]');
+    var $labelurl = $clone.find('[for="url__"]');
+    $url.prop("name", "url__" + String($max_id))
+    $url.prop("id", "url__" + String($max_id))
+    $labelurl.prop("for", "url__" + String($max_id))
+    if ($data.url) {
+        $url.val($data.url);
+    }
+    // Set display time input
+    var $display_time = $clone.find('[name="display_time__"]');
+    var $labeldisplay_time = $clone.find('[for="display_time__"]');
+    $display_time.prop("name", "display_time__" + String($max_id))
+    $display_time.prop("id", "display_time__" + String($max_id))
+    $labeldisplay_time.prop("for", "display_time__" + String($max_id))
+    if ($data.display_time) {
+        $display_time.val($data.display_time);
+    }
+    else {
+        $display_time.val(0);
+    }
+    // Set refresh input
+    var $refresh = $clone.find('[name="refresh__"]');
+    var $labelrefresh = $clone.find('[for="refresh__"]');
+    $refresh.prop("name", "refresh__" + String($max_id))
+    $refresh.prop("id", "refresh__" + String($max_id))
+    $labelrefresh.prop("for", "refresh__" + String($max_id))
+    if ($data.refresh == true) {
+        $refresh.prop("checked", true);
+    }
+    else {
+        $refresh.prop("checked", false);
+    }
+
+    // Set vertical input
+    var $vertical = $clone.find('[name="vertical__"]');
+    var $labelvertical = $clone.find('[for="vertical__"]');
+    $vertical.prop("name", "vertical__" + String($max_id))
+    $vertical.prop("id", "vertical__" + String($max_id))
+    $labelvertical.prop("for", "vertical__" + String($max_id))
+    if ($data.vertical == true) {
+        $vertical.prop("checked", true);
+    }
+    else {
+        $vertical.prop("checked", false);
+    }
+
+    // Add new field to form validator
+    $('#PikakeForm').bootstrapValidator('addField', $url);
+    $('#PikakeForm').bootstrapValidator('addField', $display_time);
+}
+
+var $config = {{ config|tojson|safe }}
+
+
+function init_form($conf){
+    $conf.forEach(function($tab) {
+        add_tab($tab)
+    })
+}
+
+function reset_form(){
+    $(".show").remove()
+}
+
+// Add button click handler
+$('.addButton').on('click', function() {
+        add_tab();
+        })
+
+$("#reset_button").on('click', function() {
+    reset_form();
+    var $config = {{ config|tojson|safe }}
+    init_form($config)
+})
+
+reset_form();
+init_form($config);
+
+</script>
 </html>

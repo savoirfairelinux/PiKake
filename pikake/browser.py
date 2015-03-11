@@ -28,7 +28,7 @@ class Browser(QWebView):
 
         self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
         self.load(QUrl(url))
-        self.showFullScreen()
+#        self.showFullScreen()
 
         self.refresh_signal.connect(self.reload_page)
 

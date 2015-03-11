@@ -49,7 +49,7 @@ class Manager(Thread):
                 self.display_time = task.value['display_time']
 
         elif task.type == 'save_config':
-            #self.save_config(task.value)
+            self.save_config(task.value)
             self.load_config()
 
         elif task.type == 'get_config':
@@ -64,7 +64,7 @@ class Manager(Thread):
             cfg = json.load(f)
 
             i = 0
-            new_tabs = cfg['tabs']
+            new_tabs = cfg
 
             max_index = max(len(new_tabs), len(self.browser_id_seq))
 
