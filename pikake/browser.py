@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QStackedLayout, QWidget
 from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtWebKit import QWebSettings
 from PyQt5.Qt import QApplication
+import PyQt5
 
 from multiprocessing import Process, Queue
 from threading import Thread
@@ -18,6 +19,7 @@ from pikake.task import Task
 class Browser(QWebView):
 
     refresh_signal = pyqtSignal()
+    scroll_signal = pyqtSignal(bool)
 
     def __init__(self, url, display_time, refresh=False):
         super(QWebView, self).__init__()
@@ -29,8 +31,10 @@ class Browser(QWebView):
         self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
         self.load(QUrl(url))
 #        self.showFullScreen()
+        
 
         self.refresh_signal.connect(self.reload_page)
+        self.scroll_signal.connect(self.scroll)
 
         self.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOn)
         self.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOn)
@@ -43,8 +47,13 @@ class Browser(QWebView):
         values['url'] = self.url
         values['display_time'] = self.display_time
         values['refresh'] = self.refresh
-
         return values
+
+    def scroll(self, down):
+        if down:
+            self.page().mainFrame().scroll(0,1)
+        else:
+            self.page().mainFrame().scroll(0, -1)
 
 
 class BrowserProcess(Process):
@@ -94,13 +103,16 @@ class BrowserProcess(Process):
     def scrolling_thread(self, browser):
         self.must_run = True
         self.must_wait = False
+        down = True
         mainFrame = browser.page().mainFrame()
-        i = 0
         while self.must_run:
             while not self.must_wait and self.must_run:
                 time.sleep(0.03)
-                i = i + 1
-                print(mainFrame.scrollBarMinimum(Qt.Vertical))
-                print(mainFrame.scrollBarMaximum(Qt.Vertical))
-                mainFrame.setScrollBarValue(Qt.Vertical, i)
-#                 mainFrame.scroll(0,1)
+                min_ = mainFrame.scrollBarMinimum(Qt.Vertical)
+                max_ = mainFrame.scrollBarMaximum(Qt.Vertical)
+                pos = mainFrame.scrollBarValue(Qt.Vertical)
+                if pos == max_:
+                    down = False
+                elif pos == min_:
+                    down = True
+                browser.scroll_signal.emit(down)
