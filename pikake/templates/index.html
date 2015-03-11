@@ -1,5 +1,10 @@
 <html>
 <head>
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
     <link rel="stylesheet" href="static/bootstrap.min.css">
      <!-- Jquery -->
     <script src="static/jquery-2.1.0.min.js"></script>
@@ -31,7 +36,7 @@
 
 <div class="container">
     <hr/>
-<form id="PikakeForm" method="post" class="form-horizontal"
+<form id="PikakeForm" method="post" class="form-horizontal" action="/"
     data-fv-framework="bootstrap"
     data-fv-icon-valid="glyphicon glyphicon-ok"
     data-fv-icon-invalid="glyphicon glyphicon-remove"
@@ -40,8 +45,13 @@
     <div id="tab__" class="hide tab" tabid="0">
     <div class="form-group">
         <label for="url__" class="col-md-2 control-label">Url</label>
-        <div class="col-md-10">
+        <div class="col-md-9">
             <input type="url" class="form-control" name="url__" value=""/>
+        </div>
+        <div class="col-md-1">
+            <button type="button" id="remove__" class="btn btn-default remove_tab" onclick="remove_tab($(this));">
+                <i class="fa fa-minus"></i>
+            </button>
         </div>
     </div>
     <div class="form-group">
@@ -63,13 +73,19 @@
         </div>
     </div>
     <hr/>
+
     </div>
+        <div class="col-md-2 col-md-offset-6">
+            <button type="button" id="add_tab" class="btn btn-default" >
+                <i class="fa fa-plus"></i>
+            </button>
+        </div>
     <div class="form-group">
-        <div class="col-md-2 col-md-offset-4">
+        <div class="col-md-1 col-md-offset-2">
            <button type="button" id="reset_button" class="btn btn-default">Reset</button>
         </div>
-        <div class="col-md-2 col-md-offset-2">
-           <button type="submit" class="btn btn-success">Save and restart PiKake</button>
+        <div class="col-md-1 ">
+           <button type="submit" class="btn btn-success">Save</button>
         </div>
     </div>
 </form>
@@ -101,13 +117,17 @@ function add_tab($data) {
                  .addClass('show').prop('id', "tab__" + String($max_id))
                  .attr('tabid', $max_id)
                  .insertBefore($template);
+    // Set delete button
+    var $remove = $clone.find('[id="remove__"]');
+    $remove.prop("id", "remove__" + String($max_id));
+    $remove.attr("tabid", String($max_id));
     // Set url input
     var $url = $clone.find('[name="url__"]');
     var $labelurl = $clone.find('[for="url__"]');
     $url.prop("name", "url__" + String($max_id))
     $url.prop("id", "url__" + String($max_id))
     $labelurl.prop("for", "url__" + String($max_id))
-    if ($data.url) {
+    if ($data && $data.url) {
         $url.val($data.url);
     }
     // Set display time input
@@ -116,11 +136,11 @@ function add_tab($data) {
     $display_time.prop("name", "display_time__" + String($max_id))
     $display_time.prop("id", "display_time__" + String($max_id))
     $labeldisplay_time.prop("for", "display_time__" + String($max_id))
-    if ($data.display_time) {
+    if ($data && $data.display_time) {
         $display_time.val($data.display_time);
     }
     else {
-        $display_time.val(0);
+        $display_time.val(30);
     }
     // Set refresh input
     var $refresh = $clone.find('[name="refresh__"]');
@@ -128,7 +148,7 @@ function add_tab($data) {
     $refresh.prop("name", "refresh__" + String($max_id))
     $refresh.prop("id", "refresh__" + String($max_id))
     $labelrefresh.prop("for", "refresh__" + String($max_id))
-    if ($data.refresh == true) {
+    if ($data && $data.refresh == true) {
         $refresh.prop("checked", true);
     }
     else {
@@ -141,7 +161,7 @@ function add_tab($data) {
     $vertical.prop("name", "vertical__" + String($max_id))
     $vertical.prop("id", "vertical__" + String($max_id))
     $labelvertical.prop("for", "vertical__" + String($max_id))
-    if ($data.vertical == true) {
+    if ($data && $data.vertical == true) {
         $vertical.prop("checked", true);
     }
     else {
@@ -167,7 +187,8 @@ function reset_form(){
 }
 
 // Add button click handler
-$('.addButton').on('click', function() {
+$('#add_tab').on('click', function() {
+        console.log("DDD");
         add_tab();
         })
 
@@ -176,6 +197,12 @@ $("#reset_button").on('click', function() {
     var $config = {{ config|tojson|safe }}
     init_form($config)
 })
+
+function remove_tab($element) {
+    console.log("DSDD");
+    var $tabid = $element.attr("tabid")   
+    $("div#tab__" + $tabid).remove()
+}
 
 reset_form();
 init_form($config);

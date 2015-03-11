@@ -58,7 +58,7 @@ def post():
     task.type = 'save_config'
     task.value = cfg
     app.manager.task_queue.put(task)
-    return redirect('/')
+    return redirect(url_for("index"))
 
 
 def main():
