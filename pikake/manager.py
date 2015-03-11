@@ -64,7 +64,7 @@ class Manager(Thread):
             cfg = json.load(f)
 
             i = 0
-            new_tabs = cfg
+            new_tabs = cfg['tabs']
 
             max_index = max(len(new_tabs), len(self.browser_id_seq))
 
