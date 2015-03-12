@@ -2,6 +2,7 @@
 
 import sys
 import time
+import random
 
 from PyQt5.QtCore import QUrl, Qt, pyqtSignal
 from PyQt5.QtWebKitWidgets import QWebView
@@ -34,7 +35,6 @@ class Browser(QWebView):
         self.settings().setUserStyleSheetUrl(QUrl(style_url))
 
         self.load(QUrl(url))
-        self.showFullScreen()
 
         self.refresh_signal.connect(self.reload_page)
         self.scroll_signal.connect(self.scroll)
@@ -132,6 +132,10 @@ class BrowserProcess(Process):
         self.browser_app = QApplication(sys.argv)
         self.browser = Browser(self.url, self.display_time, self.refresh, self.autoscroll)
         self.browser.show()
+
+        # Let time to apply fullscreen properly
+        time.sleep(random.random())
+        self.browser.showFullScreen()
 
         t = Thread(target=self.command_thread)
         t.start()
