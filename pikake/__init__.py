@@ -17,6 +17,7 @@ from flask import request, redirect, url_for
 from pikake.browser import *
 from pikake.manager import Manager
 from pikake.task import Task
+import pikake.auth
 
 
 pikake_dir = os.path.dirname(os.path.abspath(__file__))
@@ -28,6 +29,7 @@ app = Flask(__name__)
 
 
 @app.route('/', methods=['GET'])
+@auth.requires_auth
 def index():
     with open(app.config['configfile'], 'r') as f:
         cfg = json.load(f)
@@ -35,6 +37,7 @@ def index():
 
 
 @app.route('/', methods=['POST'])
+@auth.requires_auth
 def post():
     tab_ids = set([x.split("__")[-1] for x in request.form.keys() if x.split("__")[-1]])
     tab_ids = sorted(list(tab_ids))
