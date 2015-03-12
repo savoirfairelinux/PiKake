@@ -3,18 +3,15 @@
 import sys
 import time
 
-from PyQt5.QtCore import QUrl, QTimer, Qt, pyqtSignal
-from PyQt5.QtWidgets import QStackedLayout, QWidget
+from PyQt5.QtCore import QUrl, Qt, pyqtSignal
 from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtWebKit import QWebSettings
 from PyQt5.Qt import QApplication
-import PyQt5
-
 from multiprocessing import Process, Queue
 from threading import Thread
 
 from pikake.task import Task
-import pikake.pikake
+import pikake
 
 
 class Browser(QWebView):
@@ -33,7 +30,7 @@ class Browser(QWebView):
         self.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
 
         # CSS needed to hide scrollbar
-        style_url = 'file://' + pikake.pikake.pikake_dir + '/assets/css/style.css'
+        style_url = 'file://' + pikake.pikake_dir + '/assets/css/style.css'
         self.settings().setUserStyleSheetUrl(QUrl(style_url))
 
         self.load(QUrl(url))

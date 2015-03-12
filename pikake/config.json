@@ -1,1 +1,22 @@
-{"tabs": [{"refresh": true, "autoscroll": true, "display_time": 13, "url": "http://savoirfairelinux.com"}, {"refresh": false, "autoscroll": true, "display_time": 10, "url": "http://www.afe.gouv.qc.ca"}, {"refresh": true, "autoscroll": true, "display_time": 5, "url": "http://korben.info"}]}
+{
+    "tabs": [
+        {
+            "autoscroll": false,
+            "display_time": 13,
+            "refresh": true,
+            "url": "http://savoirfairelinux.com"
+        },
+        {
+            "autoscroll": false,
+            "display_time": 10,
+            "refresh": false,
+            "url": "http://www.afe.gouv.qc.ca"
+        },
+        {
+            "autoscroll": false,
+            "display_time": 5,
+            "refresh": true,
+            "url": "http://korben.info"
+        }
+    ]
+}
