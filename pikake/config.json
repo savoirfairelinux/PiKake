@@ -1,4 +1,8 @@
 {
+    "credentials": {
+        "password": "sfl",
+        "username": "sfl"
+    },
     "tabs": [
         {
             "autoscroll": false,
