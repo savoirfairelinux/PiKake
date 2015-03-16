@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}PiKake Information{% endblock %}
+
+{% block body %}
+<div class="container lead">
+    <hr/>
+    <div class="row">
+        <div class="col-md-2">
+            <span>Username:</span>
+        </div>
+        <div class="col-md-3">
+            <label>{{ config['credentials']['username'] }}</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <span>Password:</span>
+        </div>
+        <div class="col-md-3">
+            <label>{{ config['credentials']['password'] }}</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <span>Urls:</span>
+        </div>
+        <div class="col-md-3">
+            {% for ip in ips %}
+            <div class="row">
+                <label>http://{{ ip }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
