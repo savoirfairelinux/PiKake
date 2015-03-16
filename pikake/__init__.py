@@ -18,6 +18,7 @@ import pikake.webserver
 
 pikake_dir = os.path.dirname(os.path.abspath(__file__))
 
+config = {}
 
 def main():
     # Handle args
@@ -25,11 +26,15 @@ def main():
     parser.add_argument('--config', '-c', dest='configfile',
                         default=os.path.join(os.path.dirname(__file__), 'config.json'),
                         help='config file')
+    parser.add_argument('--debug', '-d', dest='debug',
+                        default=False, action='store_true',
+                        help='debug mode')
     args = parser.parse_args()
 
     app = pikake.webserver.app
     # Set config file
-    app.config['configfile'] = args.configfile
+    app.config['configfile'] = config['configfile'] = args.configfile
+    app.config['debug'] = config['debug'] = args.debug
 
     def signal_handler(signal, frame):
         logging.debug('You pressed Ctrl+C!')

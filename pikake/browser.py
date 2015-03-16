@@ -89,8 +89,9 @@ class BrowserProcess(Process):
                 command = self.queue.get()
 
                 if command == 'show':
-                    self.browser.setFocus()
-                    self.browser.activateWindow()
+                    if not pikake.config['debug']:
+                        self.browser.setFocus()
+                        self.browser.activateWindow()
                     self.browser.mainFrame.setScrollBarValue(Qt.Vertical, 0)
 
                 elif command == 'get_attrs':
@@ -135,7 +136,8 @@ class BrowserProcess(Process):
 
         # Let time to apply fullscreen properly
         time.sleep(random.random())
-        self.browser.showFullScreen()
+        if not pikake.config['debug']:
+            self.browser.showFullScreen()
 
         t = Thread(target=self.command_thread)
         t.start()
